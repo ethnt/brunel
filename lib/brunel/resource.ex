@@ -1,3 +1,7 @@
 defmodule Brunel.Resource do
-  @callback build(Brunel.Dataset.t()) :: Brunel.Dataset.t()
+  @moduledoc """
+  Represents a resource in a static set of GTFS data.
+  """
+
+  @callback build(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
 end

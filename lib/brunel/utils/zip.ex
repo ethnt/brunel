@@ -1,39 +1,35 @@
-defmodule Brunel.Utils.ZIP do
+defmodule Brunel.Utils.Zip do
   @moduledoc """
-  Utilities for dealing with ZIP files.
+  Utilities for dealing with zip files.
   """
 
   @typedoc """
-  Represents a ZIP "handle" (the PID to the process that is handling it)
+  A shortcut to a zip handle.
   """
-  @type zip_handle :: :zip.handle()
+  @type handle :: :zip.handle()
 
   @doc """
-  Load a ZIP file.
-
-      iex> Brunel.Utils.ZIP.load("/Users/brunel/Downloads/gtfs.zip")
-      {:ok, #PID<0.284.0>}
+  Load a zip file, into memory by default.
   """
-  @spec load(String.t(), [:memory | :cooked]) :: {:error, any} | {:ok, zip_handle}
-  def load(filename, opts \\ [:memory]) do
-    filename
+  @spec load(String.t(), [:memory | :cooked]) :: {:ok, handle()} | {:error, any}
+  def load(file, opts \\ [:memory]) do
+    file
     |> String.to_charlist()
     |> :zip.zip_open(opts)
   end
 
   @doc """
-  Extract a file from a ZIP.
-
-      iex> Brunel.Utils.ZIP.get(handle, "agency.txt")
-      {:ok, <Stream>}
+  Get a file from a zip file and turn it into an IO stream.
   """
-  def get(handle, filename) do
-    filename = filename |> String.to_charlist()
+  @spec get(String.t(), handle()) :: IO.Stream.t()
+  def get(filename, handle) do
+    {:ok, {_, contents}} =
+      filename
+      |> String.to_charlist()
+      |> :zip.zip_get(handle)
 
-    with {:ok, {_, contents}} <- :zip.zip_get(filename, handle),
-         {:ok, io} <- StringIO.open(contents),
-         stream <- IO.binstream(io, :line) do
-      {:ok, stream}
-    end
+    {:ok, file} = StringIO.open(contents)
+
+    IO.stream(file, :line)
   end
 end

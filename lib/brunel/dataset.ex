@@ -1,4 +1,8 @@
 defmodule Brunel.Dataset do
+  @moduledoc """
+  A set of GTFS data.
+  """
+
   defstruct ~w(source agencies stops stop_times trips)a
 
   alias Brunel.{Agency, Stop, StopTime, Trip, Utils}
@@ -15,15 +19,15 @@ defmodule Brunel.Dataset do
         }
 
   @spec load(String.t()) :: {:error, any} | {:ok, Brunel.Dataset.t()}
-  def load(file) do
-    with {:ok, handle} <- Utils.load_zip(file) do
+  def load(filename) do
+    with {:ok, handle} <- Utils.Zip.load(filename) do
       dataset = build(handle)
 
       {:ok, dataset}
     end
   end
 
-  @spec build(Brunel.Utils.ZIP.zip_handle()) :: Brunel.Dataset.t
+  @spec build(Utils.Zip.handle()) :: Brunel.Dataset.t()
   def build(handle) do
     %Brunel.Dataset{source: handle}
     |> Agency.build()
