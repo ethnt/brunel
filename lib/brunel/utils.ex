@@ -22,26 +22,24 @@ defmodule Brunel.Utils do
   def cast_value(map, key, type) do
     value = Map.get(map, key)
 
-    case type do
-      :integer -> cast_value_integer(map, key, value)
-      :float -> cast_value_float(map, key, value)
-    end
+    cast_value(map, key, value, type)
   end
 
-  @spec cast_value_integer(map, atom | bitstring, integer | bitstring) :: map
-  defp cast_value_integer(map, key, value) when is_bitstring(value) do
+  @spec cast_value(map, atom | bitstring, integer | bitstring, :integer) :: map
+  defp cast_value(map, key, value, :integer) when is_bitstring(value) do
     casted_value = String.to_integer(value)
 
     %{map | key => casted_value}
   end
-  defp cast_value_integer(map, _key, value) when is_integer(value), do: map
+  defp cast_value(map, _key, value, :integer) when is_integer(value), do: map
 
-  @spec cast_value_float(map, atom, bitstring) :: map
-  defp cast_value_float(map, key, value) when is_bitstring(value) do
+  @spec cast_value(map, atom, bitstring, :float) :: map
+  defp cast_value(map, key, value, :float) when is_bitstring(value) do
     casted_value = String.to_float(value)
 
     %{map | key => casted_value}
   end
+  defp cast_value(map, _key, value, :float) when is_float(value), do: map
 
   @doc """
   Cast a value in a list of maps into the given type.
