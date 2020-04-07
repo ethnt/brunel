@@ -3,6 +3,8 @@ defmodule Brunel.Trip do
   Represents agency data.
   """
 
+  @behaviour Brunel.Resource
+
   defstruct ~w(
     route_id
     service_id
@@ -30,8 +32,9 @@ defmodule Brunel.Trip do
           bikes_allowed: String.t()
         }
 
-  @spec build(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
-  def build(%{source: source} = dataset) do
+  @impl Brunel.Resource
+  @spec load(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
+  def load(%{source: source} = dataset) do
     trips =
       "trips.txt"
       |> Utils.Zip.get(source)

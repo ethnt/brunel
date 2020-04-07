@@ -3,6 +3,8 @@ defmodule Brunel.StopTime do
   Represents agency data.
   """
 
+  @behaviour Brunel.Resource
+
   defstruct ~w(
     trip_id
     arrival_time
@@ -34,8 +36,9 @@ defmodule Brunel.StopTime do
           timepoint: String.t()
         }
 
-  @spec build(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
-  def build(%{source: source} = dataset) do
+  @impl Brunel.Resource
+  @spec load(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
+  def load(%{source: source} = dataset) do
     stop_times =
       "stop_times.txt"
       |> Utils.Zip.get(source)

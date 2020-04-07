@@ -6,7 +6,7 @@ defmodule Brunel.Utils do
   @doc """
   Recursively build a struct for each element in a list.
   """
-  @spec recursive_struct(list, term) :: [any]
+  @spec recursive_struct([%{required(atom) => any}], term) :: [struct]
   def recursive_struct(list, struct) do
     list
     |> Enum.map(fn x -> struct(struct, x) end)

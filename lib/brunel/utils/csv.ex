@@ -6,7 +6,7 @@ defmodule Brunel.Utils.CSV do
   @doc """
   Parse a CSV from a stream and atomize the keys in the map representing each row.
   """
-  @spec parse(IO.Stream.t(), keyword) :: [map]
+  @spec parse(IO.Stream.t(), headers: boolean) :: [%{required(atom) => any}]
   def parse(stream, opts \\ [headers: true]) do
     stream
     |> CSV.decode(opts)

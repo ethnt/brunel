@@ -22,8 +22,8 @@ defmodule Brunel.Agency do
         }
 
   @impl Brunel.Resource
-  @spec build(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
-  def build(%{source: source} = dataset) do
+  @spec load(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
+  def load(%{source: source} = dataset) do
     agencies =
       "agency.txt"
       |> Utils.Zip.get(source)

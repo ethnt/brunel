@@ -21,18 +21,16 @@ defmodule Brunel.Dataset do
   @spec load(String.t()) :: {:error, any} | {:ok, Brunel.Dataset.t()}
   def load(filename) do
     with {:ok, handle} <- Utils.Zip.load(filename) do
-      dataset = build(handle)
+      # TODO: Do this with Tasks (in parallel)
+      # TODO: Make Resource a macro (each load function does the same thing)
+      dataset =
+        %Brunel.Dataset{source: handle}
+        |> Agency.load()
+        |> Stop.load()
+        |> StopTime.load()
+        |> Trip.load()
 
       {:ok, dataset}
     end
-  end
-
-  @spec build(Utils.Zip.handle()) :: Brunel.Dataset.t()
-  def build(handle) do
-    %Brunel.Dataset{source: handle}
-    |> Agency.build()
-    |> Stop.build()
-    |> StopTime.build()
-    |> Trip.build()
   end
 end

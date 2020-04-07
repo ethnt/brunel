@@ -3,5 +3,5 @@ defmodule Brunel.Resource do
   Represents a resource in a static set of GTFS data.
   """
 
-  @callback build(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
+  @callback load(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
 end
