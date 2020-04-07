@@ -21,8 +21,6 @@ defmodule Brunel.Dataset do
   @spec load(String.t()) :: {:error, any} | {:ok, Brunel.Dataset.t()}
   def load(filename) do
     with {:ok, handle} <- Utils.Zip.load(filename) do
-      # TODO: Do this with Tasks (in parallel)
-      # TODO: Make Resource a macro (each load function does the same thing)
       dataset =
         %Brunel.Dataset{source: handle}
         |> Agency.load()
