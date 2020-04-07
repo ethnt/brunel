@@ -34,6 +34,7 @@ defmodule Brunel.Stop do
         |> Utils.CSV.parse()
         |> Utils.recursive_struct(Stop)
       end
+
     %{dataset | stops: stops}
   end
 end

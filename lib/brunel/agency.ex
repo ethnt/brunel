@@ -3,26 +3,21 @@ defmodule Brunel.Agency do
   Represents agency data.
   """
 
-  @behaviour Brunel.Resource
-
-  defstruct ~w(agency_id agency_name agency_url agency_timezone agency_lang agency_phone)a
+  use Ecto.Schema
 
   alias Brunel.{Agency, Utils}
 
-  @typedoc """
-  Represents an agency in the dataset.
-  """
-  @type t :: %__MODULE__{
-          agency_id: String.t(),
-          agency_name: String.t(),
-          agency_url: String.t(),
-          agency_timezone: String.t(),
-          agency_lang: String.t(),
-          agency_phone: String.t()
-        }
+  @primary_key {:agency_id, :integer, []}
+  schema "agencies" do
+    field :agency_name
+    field :agency_url
+    field :agency_timezone
+    field :agency_phone
+    field :agency_lang
 
-  @impl Brunel.Resource
-  @spec load(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
+    has_many :routes, Brunel.Route
+  end
+
   def load(%{source: source} = dataset) do
     agencies =
       with {:ok, file} = Utils.Zip.get("agency.txt", source) do
