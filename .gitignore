@@ -24,3 +24,6 @@ brunel-*.tar
 
 # Language server
 /.elixir_ls/
+
+# OS-specific files
+.DS_Store

@@ -29,11 +29,11 @@ defmodule Brunel.Stop do
   @spec load(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
   def load(%{source: source} = dataset) do
     stops =
-      "stops.txt"
-      |> Utils.Zip.get(source)
-      |> Utils.CSV.parse()
-      |> Utils.recursive_struct(Stop)
-
+      with {:ok, file} = Utils.Zip.get("stops.txt", source) do
+        file
+        |> Utils.CSV.parse()
+        |> Utils.recursive_struct(Stop)
+      end
     %{dataset | stops: stops}
   end
 end

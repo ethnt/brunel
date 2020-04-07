@@ -36,10 +36,11 @@ defmodule Brunel.Trip do
   @spec load(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
   def load(%{source: source} = dataset) do
     trips =
-      "trips.txt"
-      |> Utils.Zip.get(source)
-      |> Utils.CSV.parse()
-      |> Utils.recursive_struct(Trip)
+      with {:ok, file} = Utils.Zip.get("trips.txt", source) do
+        file
+        |> Utils.CSV.parse()
+        |> Utils.recursive_struct(Trip)
+      end
 
     %{dataset | trips: trips}
   end

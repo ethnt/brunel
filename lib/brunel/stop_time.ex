@@ -40,10 +40,11 @@ defmodule Brunel.StopTime do
   @spec load(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
   def load(%{source: source} = dataset) do
     stop_times =
-      "stop_times.txt"
-      |> Utils.Zip.get(source)
-      |> Utils.CSV.parse()
-      |> Utils.recursive_struct(StopTime)
+      with {:ok, file} = Utils.Zip.get("stop_times.txt", source) do
+        file
+        |> Utils.CSV.parse()
+        |> Utils.recursive_struct(StopTime)
+      end
 
     %{dataset | stop_times: stop_times}
   end

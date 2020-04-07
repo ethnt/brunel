@@ -1,4 +1,6 @@
 defmodule Brunel.MixProject do
+  @moduledoc false
+
   use Mix.Project
 
   def project do
@@ -8,7 +10,8 @@ defmodule Brunel.MixProject do
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      dialyzer: [plt_add_apps: [:mix]]
+      dialyzer: [plt_add_apps: [:mix]],
+      preferred_cli_env: [espec: :test]
     ]
   end
 
@@ -25,7 +28,8 @@ defmodule Brunel.MixProject do
       {:csv, "~> 2.3"},
       {:credo, "~> 1.3", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
-      {:ex_doc, "~> 0.21", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.21", only: :dev, runtime: false},
+      {:espec, "~> 1.8.2", only: :test}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
     ]

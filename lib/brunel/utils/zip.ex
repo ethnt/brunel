@@ -21,15 +21,15 @@ defmodule Brunel.Utils.Zip do
   @doc """
   Get a file from a zip file and turn it into an IO stream.
   """
-  @spec get(String.t(), handle()) :: IO.Stream.t()
+  @spec get(String.t(), handle()) :: {:ok, IO.Stream.t()} | {:error, any}
   def get(filename, handle) do
-    {:ok, {_, contents}} =
-      filename
-      |> String.to_charlist()
-      |> :zip.zip_get(handle)
+    filename = filename |> String.to_charlist()
 
-    {:ok, file} = StringIO.open(contents)
-
-    IO.stream(file, :line)
+    with {:ok, {_, contents}} <- :zip.zip_get(filename, handle),
+         {:ok, file} <- StringIO.open(contents) do
+      {:ok, IO.stream(file, :line)}
+    else
+      err -> err
+    end
   end
 end
