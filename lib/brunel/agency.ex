@@ -3,33 +3,40 @@ defmodule Brunel.Agency do
   Represents agency data.
   """
 
-  @behaviour Brunel.Resource
+  alias Brunel.Utils
 
-  defstruct ~w(agency_id agency_name agency_url agency_timezone agency_lang agency_phone)a
+  use Ecto.Schema
 
-  alias Brunel.{Agency, Utils}
+  import Ecto.Changeset
 
-  @typedoc """
-  Represents an agency in the dataset.
-  """
-  @type t :: %__MODULE__{
-          agency_id: String.t(),
-          agency_name: String.t(),
-          agency_url: String.t(),
-          agency_timezone: String.t(),
-          agency_lang: String.t(),
-          agency_phone: String.t()
-        }
+  @primary_key {:agency_id, :integer, []}
+  schema "agencies" do
+    field :agency_name
+    field :agency_url
+    field :agency_timezone
+    field :agency_phone
+    field :agency_lang
 
-  @impl Brunel.Resource
-  @spec build(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
+    has_many :routes, Brunel.Route
+  end
+
   def build(%{source: source} = dataset) do
     agencies =
       "agency.txt"
       |> Utils.Zip.get(source)
       |> Utils.CSV.parse()
-      |> Utils.recursive_struct(Agency)
+      |> Enum.map(fn agency -> Brunel.Agency.changeset(%Brunel.Agency{}, agency) end)
+      |> Enum.map(fn agency -> agency.changes end)
 
-    %{dataset | agencies: agencies}
+    Brunel.Repo.insert_all(Brunel.Agency, agencies)
+
+    dataset
+  end
+
+  def changeset(agency, params \\ %{}) do
+    params = %{params | agency_id: String.to_integer(params[:agency_id])}
+
+    agency
+    |> cast(params, [:agency_id, :agency_name, :agency_url, :agency_timezone, :agency_phone, :agency_lang])
   end
 end

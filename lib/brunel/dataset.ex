@@ -5,7 +5,7 @@ defmodule Brunel.Dataset do
 
   defstruct ~w(source agencies stops stop_times trips)a
 
-  alias Brunel.{Agency, Stop, StopTime, Trip, Utils}
+  alias Brunel.{Agency, Stop, StopTime, Trip, Route, Utils}
 
   @typedoc """
   Represents a complete Brunel dataset.
@@ -31,8 +31,9 @@ defmodule Brunel.Dataset do
   def build(handle) do
     %Brunel.Dataset{source: handle}
     |> Agency.build()
+    |> Route.build()
+    |> Trip.build()
     |> Stop.build()
     |> StopTime.build()
-    |> Trip.build()
   end
 end

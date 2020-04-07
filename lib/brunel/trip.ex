@@ -1,43 +1,34 @@
 defmodule Brunel.Trip do
-  @moduledoc """
-  Represents agency data.
-  """
+  alias Brunel.Utils
 
-  defstruct ~w(
-    route_id
-    service_id
-    trip_id
-    trip_headsign
-    trip_short_name
-    direction_id
-    wheelchair_accessible
-    bikes_allowed
-  )a
+  use Ecto.Schema
 
-  alias Brunel.{Trip, Utils}
+  import Ecto.Changeset
 
-  @typedoc """
-  Represents an agency in the dataset.
-  """
-  @type t :: %__MODULE__{
-          route_id: String.t(),
-          service_id: String.t(),
-          trip_id: String.t(),
-          trip_headsign: String.t(),
-          trip_short_name: String.t(),
-          direction_id: String.t(),
-          wheelchair_accessible: String.t(),
-          bikes_allowed: String.t()
-        }
+  @primary_key {:trip_id, :integer, []}
+  schema "trips" do
+    field :service_id, :string
+    field :trip_headsign, :string
+    field :trip_short_name, :string
+    field :direction_id, :string
 
-  @spec build(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
+    belongs_to :route, Brunel.Route, references: :route_id
+  end
+
   def build(%{source: source} = dataset) do
-    trips =
-      "trips.txt"
-      |> Utils.Zip.get(source)
-      |> Utils.CSV.parse()
-      |> Utils.recursive_struct(Trip)
+    "trips.txt"
+    |> Utils.Zip.get(source)
+    |> Utils.CSV.parse()
+    |> Enum.map(fn trip -> %{trip | trip_id: String.to_integer(trip[:trip_id])} end)
+    |> Enum.map(fn trip -> %{trip | route_id: String.to_integer(trip[:route_id])} end)
+    |> Enum.map(fn trip -> Brunel.Trip.changeset(%Brunel.Trip{}, trip) end)
+    |> Enum.map(fn trip -> Brunel.Repo.insert(trip) end)
 
-    %{dataset | trips: trips}
+    dataset
+  end
+
+  def changeset(trip \\ %Brunel.Trip{}, params) do
+    trip
+    |> cast(params, [:trip_id, :service_id, :trip_headsign, :trip_short_name, :direction_id])
   end
 end
