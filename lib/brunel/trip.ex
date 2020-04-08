@@ -37,6 +37,7 @@ defmodule Brunel.Trip do
     %{dataset | trips: trips}
   end
 
+  @impl Brunel.Resource
   @spec find(integer) :: Trip.t() | nil
   def find(id) do
     Utils.Persistence.find_by(Trip, :trip_id, id)

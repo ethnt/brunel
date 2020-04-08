@@ -12,10 +12,10 @@ defmodule Brunel.Agency do
     type: :ordered_set
 
   @type t :: %__MODULE__{
-        __meta__: Memento.Table,
-        agency_id: integer,
-        agency_name: String.t()
-      }
+          __meta__: Memento.Table,
+          agency_id: integer,
+          agency_name: String.t()
+        }
 
   @impl Brunel.Resource
   @spec load(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
@@ -32,13 +32,9 @@ defmodule Brunel.Agency do
     %{dataset | agencies: agencies}
   end
 
+  @impl Brunel.Resource
   @spec find(integer) :: Agency.t() | nil
   def find(id) do
     Utils.Persistence.find_by(Agency, :agency_id, id)
-  end
-
-  @spec routes(agency :: Agency.t()) :: [Brunel.Route.t()]
-  def routes(%{agency_id: agency_id}) do
-    Utils.Persistence.query(Brunel.Route, [{:==, :agency_id, agency_id}])
   end
 end

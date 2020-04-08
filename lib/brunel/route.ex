@@ -35,6 +35,7 @@ defmodule Brunel.Route do
     %{dataset | routes: routes}
   end
 
+  @impl Brunel.Resource
   @spec find(integer) :: Route.t() | nil
   def find(id) do
     Utils.Persistence.find_by(Route, :route_id, id)

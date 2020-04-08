@@ -4,4 +4,5 @@ defmodule Brunel.Resource do
   """
 
   @callback load(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
+  @callback find(id :: integer) :: struct | nil
 end

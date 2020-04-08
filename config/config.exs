@@ -1,4 +1,4 @@
 import Config
 
 config :mnesia,
-  dir: '.mnesia/#{Mix.env}/#{node()}'
+  dir: '.mnesia/#{Mix.env()}/#{node()}'

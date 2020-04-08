@@ -8,8 +8,12 @@ defmodule Brunel.Utils.Persistence do
   @tables [
     Brunel.Agency,
     Brunel.Route,
+    Brunel.Stop,
+    Brunel.StopTime,
     Brunel.Trip
   ]
+
+  @type table :: Brunel.Agency | Brunel.Route | Brunel.Stop | Brunel.StopTime | Brunel.Trip
 
   @spec prepare :: :ok
   def prepare do
@@ -17,35 +21,37 @@ defmodule Brunel.Utils.Persistence do
     |> Enum.each(fn table -> Memento.Table.create!(table) end)
   end
 
-  @spec all(table :: atom) :: [struct]
+  @spec all(table :: table) :: [struct]
   def all(table) do
-    Memento.transaction! fn ->
+    Memento.transaction!(fn ->
       Memento.Query.all(table)
-    end
+    end)
   end
 
-  @spec count(table :: atom) :: non_neg_integer()
+  @spec count(table :: table) :: non_neg_integer()
   def count(table) do
     Memento.Table.info(table)
     |> Keyword.get(:size)
   end
 
+  @spec find_by(table :: table, attribute :: atom, id :: integer | String.t()) :: struct | nil
   def find_by(table, attribute, id) do
     Persistence.query(table, {:==, attribute, id}, limit: 1)
     |> Enum.at(0)
   end
 
-  def query(table, guards, opts \\ []) do
-    Memento.transaction! fn ->
+  @spec query(table :: table, guards :: tuple, opts :: keyword) :: [struct]
+  def query(table, guards \\ {}, opts \\ []) do
+    Memento.transaction!(fn ->
       Memento.Query.select(table, guards, opts)
-    end
+    end)
   end
 
   @spec bulk_write(records :: [struct]) :: [struct]
   def bulk_write(records) do
-    Memento.transaction! fn ->
+    Memento.transaction!(fn ->
       records
-      |> Enum.reduce([], fn(record, acc) -> [Memento.Query.write(record) | acc] end)
-    end
+      |> Enum.reduce([], fn record, acc -> [Memento.Query.write(record) | acc] end)
+    end)
   end
 end
