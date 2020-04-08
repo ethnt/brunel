@@ -12,6 +12,11 @@ defmodule Brunel.Utils do
     |> Enum.map(fn x -> struct(struct, x) end)
   end
 
+  def recursive_changeset(list, module) do
+    list
+    |> Enum.map(fn x -> module.changeset(struct(module), x) end)
+  end
+
   @doc """
   Cast a value in a map into the given type.
 

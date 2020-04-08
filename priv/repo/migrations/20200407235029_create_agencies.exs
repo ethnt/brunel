@@ -11,7 +11,6 @@ defmodule Brunel.Repo.Migrations.CreateAgencies do
       add :agency_timezone, :string
       add :agency_phone, :string
       add :agency_lang, :string
-      add :dataset_id, references(:datasets)
     end
   end
 end

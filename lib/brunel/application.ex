@@ -8,7 +8,7 @@ defmodule Brunel.Application do
       {Brunel.Repo, []}
     ]
 
-    Mix.Task.run("ecto.migrate", ["-r", "Brunel.Repo"])
+    # Mix.Task.run("ecto.migrate", ["-r", "Brunel.Repo"])
 
     opts = [strategy: :one_for_one, name: Brunel.Supervisor]
     Supervisor.start_link(children, opts)
