@@ -5,21 +5,17 @@ defmodule Brunel.Agency do
 
   @behaviour Brunel.Resource
 
-  defstruct ~w(agency_id agency_name agency_url agency_timezone agency_lang agency_phone)a
-
   alias Brunel.{Agency, Utils}
 
-  @typedoc """
-  Represents an agency in the dataset.
-  """
+  use Memento.Table,
+    attributes: [:agency_id, :agency_name],
+    type: :ordered_set
+
   @type t :: %__MODULE__{
-          agency_id: String.t(),
-          agency_name: String.t(),
-          agency_url: String.t(),
-          agency_timezone: String.t(),
-          agency_lang: String.t(),
-          agency_phone: String.t()
-        }
+        __meta__: Memento.Table,
+        agency_id: integer,
+        agency_name: String.t()
+      }
 
   @impl Brunel.Resource
   @spec load(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
@@ -30,8 +26,19 @@ defmodule Brunel.Agency do
         |> Utils.CSV.parse()
         |> Utils.cast_values(:agency_id, :integer)
         |> Utils.recursive_struct(Agency)
+        |> Utils.Persistence.bulk_write()
       end
 
     %{dataset | agencies: agencies}
+  end
+
+  @spec find(integer) :: Agency.t() | nil
+  def find(id) do
+    Utils.Persistence.find_by(Agency, :agency_id, id)
+  end
+
+  @spec routes(agency :: Agency.t()) :: [Brunel.Route.t()]
+  def routes(%{agency_id: agency_id}) do
+    Utils.Persistence.query(Brunel.Route, [{:==, :agency_id, agency_id}])
   end
 end

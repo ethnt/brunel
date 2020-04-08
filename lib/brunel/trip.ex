@@ -1,35 +1,23 @@
 defmodule Brunel.Trip do
   @moduledoc """
-  Represents agency data.
+  Represents route data.
   """
 
   @behaviour Brunel.Resource
 
-  defstruct ~w(
-    route_id
-    service_id
-    trip_id
-    trip_headsign
-    trip_short_name
-    direction_id
-    wheelchair_accessible
-    bikes_allowed
-  )a
-
   alias Brunel.{Trip, Utils}
 
-  @typedoc """
-  Represents an agency in the dataset.
-  """
+  use Memento.Table,
+    attributes: [:trip_id, :route_id, :service_id, :trip_headsign, :trip_short_name],
+    type: :ordered_set
+
   @type t :: %__MODULE__{
-          route_id: String.t(),
-          service_id: String.t(),
-          trip_id: String.t(),
-          trip_headsign: String.t(),
-          trip_short_name: String.t(),
-          direction_id: String.t(),
-          wheelchair_accessible: String.t(),
-          bikes_allowed: String.t()
+          __meta__: Memento.Table,
+          trip_id: integer,
+          route_id: integer,
+          service_id: integer,
+          trip_headsign: String.t() | nil,
+          trip_short_name: String.t() | nil
         }
 
   @impl Brunel.Resource
@@ -39,9 +27,18 @@ defmodule Brunel.Trip do
       with {:ok, file} = Utils.Zip.get("trips.txt", source) do
         file
         |> Utils.CSV.parse()
+        |> Utils.cast_values(:trip_id, :integer)
+        |> Utils.cast_values(:route_id, :integer)
+        |> Utils.cast_values(:service_id, :integer)
         |> Utils.recursive_struct(Trip)
+        |> Utils.Persistence.bulk_write()
       end
 
     %{dataset | trips: trips}
+  end
+
+  @spec find(integer) :: Trip.t() | nil
+  def find(id) do
+    Utils.Persistence.find_by(Trip, :trip_id, id)
   end
 end

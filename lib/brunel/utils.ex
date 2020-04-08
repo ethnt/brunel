@@ -31,6 +31,7 @@ defmodule Brunel.Utils do
 
     %{map | key => casted_value}
   end
+
   defp cast_value(map, _key, value, :integer) when is_integer(value), do: map
 
   @spec cast_value(map, atom, bitstring, :float) :: map
@@ -39,6 +40,7 @@ defmodule Brunel.Utils do
 
     %{map | key => casted_value}
   end
+
   defp cast_value(map, _key, value, :float) when is_float(value), do: map
 
   @doc """

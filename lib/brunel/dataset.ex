@@ -3,9 +3,9 @@ defmodule Brunel.Dataset do
   A set of GTFS data.
   """
 
-  defstruct ~w(source agencies stops stop_times trips)a
+  defstruct ~w(source agencies routes trips)a
 
-  alias Brunel.{Agency, Stop, StopTime, Trip, Utils}
+  alias Brunel.{Agency, Route, Trip, Utils}
 
   @typedoc """
   Represents a complete Brunel dataset.
@@ -13,19 +13,19 @@ defmodule Brunel.Dataset do
   @type t :: %__MODULE__{
           source: :zip.handle(),
           agencies: list(Agency.t()) | nil,
-          stops: list(Stop.t()) | nil,
-          stop_times: list(StopTime.t()) | nil,
+          routes: list(Route.t()) | nil,
           trips: list(Trip.t()) | nil
         }
 
   @spec load(String.t()) :: {:error, any} | {:ok, Brunel.Dataset.t()}
   def load(filename) do
+    Utils.Persistence.prepare()
+
     with {:ok, handle} <- Utils.Zip.load(filename) do
       dataset =
         %Brunel.Dataset{source: handle}
         |> Agency.load()
-        |> Stop.load()
-        |> StopTime.load()
+        |> Route.load()
         |> Trip.load()
 
       {:ok, dataset}
