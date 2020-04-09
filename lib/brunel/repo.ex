@@ -5,5 +5,5 @@ defmodule Brunel.Repo do
 
   use Ecto.Repo,
     otp_app: :brunel,
-    adapter: Ecto.Adapters.Postgres
+    adapter: Sqlite.Ecto2
 end

@@ -21,14 +21,14 @@ defmodule Brunel.StopTime do
 
   def load(%{source: source} = dataset) do
     with {:ok, file} = Utils.Zip.get("stop_times.txt", source) do
-      file
-      |> Utils.CSV.parse()
-      |> Utils.recursive_changeset(StopTime)
-      |> Enum.map(fn %{changes: params} -> params end)
-      |> Enum.chunk_every(500)
-      |> Enum.each(fn group ->
-        Brunel.Repo.insert_all(Brunel.StopTime, group, on_conflict: :nothing)
-      end)
+      chunks =
+        file
+        |> Utils.CSV.parse()
+        |> Utils.recursive_changeset(StopTime)
+        |> Enum.chunk_every(200)
+
+      chunks
+      |> Enum.each(fn chunk -> chunk |> Utils.build_multi() |> Brunel.Repo.transaction() end)
     end
 
     dataset

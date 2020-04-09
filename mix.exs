@@ -28,7 +28,7 @@ defmodule Brunel.MixProject do
     [
       {:csv, "~> 2.3"},
       {:ecto, "~> 2.2.11"},
-      {:postgrex, ">= 0.0.0"},
+      {:sqlite_ecto2, "~> 2.4.1"},
       {:credo, "~> 1.3", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:ex_doc, "~> 0.21", only: :dev, runtime: false},

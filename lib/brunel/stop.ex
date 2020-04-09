@@ -27,11 +27,8 @@ defmodule Brunel.Stop do
       file
       |> Utils.CSV.parse()
       |> Utils.recursive_changeset(Stop)
-      |> Enum.map(fn %{changes: params} -> params end)
-      |> Enum.chunk_every(500)
-      |> Enum.each(fn group ->
-        Brunel.Repo.insert_all(Brunel.Stop, group, on_conflict: :nothing)
-      end)
+      |> Utils.build_multi()
+      |> Brunel.Repo.transaction()
     end
 
     dataset

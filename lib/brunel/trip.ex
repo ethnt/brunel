@@ -26,11 +26,8 @@ defmodule Brunel.Trip do
       file
       |> Utils.CSV.parse()
       |> Utils.recursive_changeset(Trip)
-      |> Enum.map(fn %{changes: params} -> params end)
-      |> Enum.chunk_every(500)
-      |> Enum.each(fn group ->
-        Brunel.Repo.insert_all(Brunel.Trip, group, on_conflict: :nothing)
-      end)
+      |> Utils.build_multi()
+      |> Brunel.Repo.transaction()
     end
 
     dataset

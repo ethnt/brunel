@@ -17,6 +17,14 @@ defmodule Brunel.Utils do
     |> Enum.map(fn x -> module.changeset(struct(module), x) end)
   end
 
+  def build_multi(changesets) do
+    changesets
+    |> Enum.with_index
+    |> Enum.reduce(Ecto.Multi.new(), fn {changeset, i}, multi ->
+      Ecto.Multi.insert_or_update(multi, {:insert, i}, changeset)
+    end)
+  end
+
   @doc """
   Cast a value in a map into the given type.
 

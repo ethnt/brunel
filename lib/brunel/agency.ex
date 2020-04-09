@@ -23,7 +23,8 @@ defmodule Brunel.Agency do
       file
       |> Utils.CSV.parse()
       |> Utils.recursive_changeset(Agency)
-      |> Enum.each(fn changeset -> Brunel.Repo.insert(changeset) end)
+      |> Utils.build_multi()
+      |> Brunel.Repo.transaction()
     end
 
     dataset

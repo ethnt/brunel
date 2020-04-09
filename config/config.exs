@@ -1,9 +1,7 @@
 import Config
 
 config :brunel, Brunel.Repo,
-  database: "brunel_dev",
-  username: "postgres",
-  password: "",
-  hostname: "localhost"
+  adapter: Sqlite.Ecto2,
+  database: "brunel.sqlite3"
 
 config :brunel, ecto_repos: [Brunel.Repo]
