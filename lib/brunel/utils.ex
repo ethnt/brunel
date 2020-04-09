@@ -26,6 +26,16 @@ defmodule Brunel.Utils do
   end
 
   @doc """
+  Run a set of multi-operation transactions. SQLite doesn't support huge numbers of insertions or updates in one
+  transaction, so separate them out into chunks and then commit them.
+  """
+  def bulk_insert(changesets) do
+    changesets
+    |> Enum.chunk_every(200)
+    |> Enum.each(fn chunk -> chunk |> Brunel.Utils.build_multi() |> Brunel.Repo.transaction() end)
+  end
+
+  @doc """
   Cast a value in a map into the given type.
 
       iex> Utils.cast_value(%{foo: "1"}, :foo, :integer)
