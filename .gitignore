@@ -27,3 +27,6 @@ brunel-*.tar
 
 # OS-specific files
 .DS_Store
+
+# Database
+brunel.sqlite3

@@ -5,13 +5,13 @@ defmodule Brunel.Dataset do
 
   defstruct ~w(source)a
 
-  alias Brunel.{Agency, Utils}
+  alias Brunel.{Agency, Route, Stop, Trip, StopTime, Utils}
 
   @typedoc """
   Represents a complete Brunel dataset.
   """
   @type t :: %__MODULE__{
-          source: Utils.Zip.handle
+          source: Utils.Zip.handle()
         }
 
   @spec load(String.t()) :: {:error, any} | {:ok, Brunel.Dataset.t()}
@@ -20,9 +20,10 @@ defmodule Brunel.Dataset do
       dataset =
         %Brunel.Dataset{source: handle}
         |> Agency.load()
-        # |> Stop.load()
-        # |> StopTime.load()
-        # |> Trip.load()
+        |> Route.load()
+        |> Stop.load()
+        |> Trip.load()
+        |> StopTime.load()
 
       {:ok, dataset}
     end
