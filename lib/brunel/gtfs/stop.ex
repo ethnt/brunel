@@ -1,13 +1,14 @@
-defmodule Brunel.Stop do
+defmodule Brunel.GTFS.Stop do
   @moduledoc """
   Represents agency data.
   """
 
-  @behaviour Brunel.Resource
+  @behaviour Brunel.GTFS.Resource
 
   defstruct ~w(stop_id stop_code stop_name stop_desc stop_lat stop_lon zone_id stop_url location_type parent_station)a
 
-  alias Brunel.{Stop, Utils}
+  alias Brunel.Utils
+  alias Brunel.GTFS.Stop
 
   @typedoc """
   Represents an agency in the dataset.
@@ -25,8 +26,8 @@ defmodule Brunel.Stop do
           parent_station: String.t()
         }
 
-  @impl Brunel.Resource
-  @spec load(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
+  @impl Brunel.GTFS.Resource
+  @spec load(dataset :: Brunel.GTFS.Dataset.t()) :: Brunel.GTFS.Dataset.t()
   def load(%{source: source} = dataset) do
     stops =
       with {:ok, file} = Utils.Zip.get("stops.txt", source) do
@@ -34,6 +35,7 @@ defmodule Brunel.Stop do
         |> Utils.CSV.parse()
         |> Utils.recursive_struct(Stop)
       end
+
     %{dataset | stops: stops}
   end
 end

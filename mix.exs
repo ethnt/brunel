@@ -26,6 +26,7 @@ defmodule Brunel.MixProject do
   defp deps do
     [
       {:csv, "~> 2.3"},
+      {:calendar, "~> 1.0.0"},
       {:credo, "~> 1.3", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:ex_doc, "~> 0.21", only: :dev, runtime: false},

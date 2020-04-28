@@ -1,9 +1,9 @@
-defmodule Brunel.StopTime do
+defmodule Brunel.GTFS.StopTime do
   @moduledoc """
   Represents agency data.
   """
 
-  @behaviour Brunel.Resource
+  @behaviour Brunel.GTFS.Resource
 
   defstruct ~w(
     trip_id
@@ -18,7 +18,8 @@ defmodule Brunel.StopTime do
     timepoint
   )a
 
-  alias Brunel.{StopTime, Utils}
+  alias Brunel.Utils
+  alias Brunel.GTFS.StopTime
 
   @typedoc """
   Represents an agency in the dataset.
@@ -36,13 +37,16 @@ defmodule Brunel.StopTime do
           timepoint: String.t()
         }
 
-  @impl Brunel.Resource
-  @spec load(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
+  @impl Brunel.GTFS.Resource
+  @spec load(dataset :: Brunel.GTFS.Dataset.t()) :: Brunel.GTFS.Dataset.t()
   def load(%{source: source} = dataset) do
     stop_times =
       with {:ok, file} = Utils.Zip.get("stop_times.txt", source) do
         file
         |> Utils.CSV.parse()
+        |> Utils.cast_values(:arrival_time, :time)
+        |> Utils.cast_values(:departure_time, :time)
+        |> Utils.cast_values(:stop_sequence, :integer)
         |> Utils.recursive_struct(StopTime)
       end
 

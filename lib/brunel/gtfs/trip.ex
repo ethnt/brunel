@@ -1,9 +1,9 @@
-defmodule Brunel.Trip do
+defmodule Brunel.GTFS.Trip do
   @moduledoc """
   Represents agency data.
   """
 
-  @behaviour Brunel.Resource
+  @behaviour Brunel.GTFS.Resource
 
   defstruct ~w(
     route_id
@@ -16,7 +16,8 @@ defmodule Brunel.Trip do
     bikes_allowed
   )a
 
-  alias Brunel.{Trip, Utils}
+  alias Brunel.Utils
+  alias Brunel.GTFS.Trip
 
   @typedoc """
   Represents an agency in the dataset.
@@ -32,8 +33,8 @@ defmodule Brunel.Trip do
           bikes_allowed: String.t()
         }
 
-  @impl Brunel.Resource
-  @spec load(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
+  @impl Brunel.GTFS.Resource
+  @spec load(dataset :: Brunel.GTFS.Dataset.t()) :: Brunel.GTFS.Dataset.t()
   def load(%{source: source} = dataset) do
     trips =
       with {:ok, file} = Utils.Zip.get("trips.txt", source) do

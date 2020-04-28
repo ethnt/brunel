@@ -1,13 +1,14 @@
-defmodule Brunel.Agency do
+defmodule Brunel.GTFS.Agency do
   @moduledoc """
   Represents agency data.
   """
 
-  @behaviour Brunel.Resource
+  @behaviour Brunel.GTFS.Resource
 
   defstruct ~w(agency_id agency_name agency_url agency_timezone agency_lang agency_phone)a
 
-  alias Brunel.{Agency, Utils}
+  alias Brunel.Utils
+  alias Brunel.GTFS.Agency
 
   @typedoc """
   Represents an agency in the dataset.
@@ -21,14 +22,13 @@ defmodule Brunel.Agency do
           agency_phone: String.t()
         }
 
-  @impl Brunel.Resource
-  @spec load(dataset :: Brunel.Dataset.t()) :: Brunel.Dataset.t()
+  @impl Brunel.GTFS.Resource
+  @spec load(dataset :: Brunel.GTFS.Dataset.t()) :: Brunel.GTFS.Dataset.t()
   def load(%{source: source} = dataset) do
     agencies =
       with {:ok, file} = Utils.Zip.get("agency.txt", source) do
         file
         |> Utils.CSV.parse()
-        |> Utils.cast_values(:agency_id, :integer)
         |> Utils.recursive_struct(Agency)
       end
 

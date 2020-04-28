@@ -31,6 +31,7 @@ defmodule Brunel.Utils do
 
     %{map | key => casted_value}
   end
+
   defp cast_value(map, _key, value, :integer) when is_integer(value), do: map
 
   @spec cast_value(map, atom, bitstring, :float) :: map
@@ -39,7 +40,24 @@ defmodule Brunel.Utils do
 
     %{map | key => casted_value}
   end
+
   defp cast_value(map, _key, value, :float) when is_float(value), do: map
+
+  @spec cast_value(map, atom, bitstring, :datetime) :: Date.t()
+  defp cast_value(map, key, value, :datetime) when is_bitstring(value) do
+    with {:ok, casted_value} <- Calendar.Date.Parse.iso8601(value) do
+      %{map | key => casted_value}
+    end
+  end
+
+  @spec cast_value(map, atom, bitstring, :time) :: Time.t()
+  defp cast_value(map, key, value, :time) when is_bitstring(value) do
+    case Calendar.Time.Parse.iso8601(value) do
+      {:ok, casted_value} -> %{map | key => casted_value}
+      {:error, :invalid_time} -> cast_value(map, key, fix_over_time(value), :time)
+      _ -> map
+    end
+  end
 
   @doc """
   Cast a value in a list of maps into the given type.
@@ -47,8 +65,20 @@ defmodule Brunel.Utils do
       iex> Utils.cast_values([%{foo: "1"}, %{foo: "2"}], :foo, :integer)
       [%{foo: 1}, %{foo: 2}]
   """
-  @spec cast_values([map], atom | bitstring, :integer | :float) :: [map]
+  @spec cast_values([map], atom | bitstring, :integer | :float | :datetime | :time) :: [map]
   def cast_values(maps, key, type) do
     Enum.map(maps, fn m -> cast_value(m, key, type) end)
+  end
+
+  defp fix_over_time(time) do
+    [hours, minutes, seconds] =
+      time
+      |> String.split(":")
+      |> Enum.map(&String.to_integer/1)
+
+    [hours - 24, minutes, seconds]
+    |> Enum.map(&Integer.to_string/1)
+    |> Enum.map(fn num -> String.pad_leading(num, 2, "0") end)
+    |> Enum.join(":")
   end
 end
