@@ -45,4 +45,12 @@ defmodule Brunel.GTFS.Trip do
 
     %{dataset | trips: trips}
   end
+
+  def for_date(%{trips: trips} = dataset, date \\ Utils.Timing.today()) do
+    current_services =
+      Brunel.GTFS.Service.for_date(dataset, date) |> Enum.map(&Map.get(&1, :service_id))
+
+    trips
+    |> Enum.filter(fn %{service_id: service_id} -> Enum.member?(current_services, service_id) end)
+  end
 end

@@ -59,6 +59,21 @@ defmodule Brunel.Utils do
     end
   end
 
+  defp cast_value(map, key, value, :time_in_seconds) when is_bitstring(value) do
+    [hours, minutes, seconds] =
+      value
+      |> String.split(":")
+      |> Enum.map(&String.to_integer/1)
+
+    %{map | key => hours * 3600 + minutes * 60 + seconds}
+  end
+
+  defp cast_value(map, key, value, :date) do
+    case Calendar.Date.Parse.iso8601(value) do
+      {:ok, casted_value} -> %{map | key => casted_value}
+    end
+  end
+
   @doc """
   Cast a value in a list of maps into the given type.
 

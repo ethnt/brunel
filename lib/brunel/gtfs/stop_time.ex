@@ -44,12 +44,19 @@ defmodule Brunel.GTFS.StopTime do
       with {:ok, file} = Utils.Zip.get("stop_times.txt", source) do
         file
         |> Utils.CSV.parse()
-        |> Utils.cast_values(:arrival_time, :time)
-        |> Utils.cast_values(:departure_time, :time)
+        |> Utils.cast_values(:arrival_time, :time_in_seconds)
+        |> Utils.cast_values(:departure_time, :time_in_seconds)
         |> Utils.cast_values(:stop_sequence, :integer)
         |> Utils.recursive_struct(StopTime)
       end
 
     %{dataset | stop_times: stop_times}
+  end
+
+  @spec for_trip(Brunel.GTFS.Dataset.t(), Brunel.GTFS.Trip.t()) :: list(Brunel.GTFS.StopTime.t())
+  def for_trip(%{stop_times: stop_times}, %{trip_id: trip_id}) do
+    stop_times
+    |> Enum.filter(fn st -> st.trip_id == trip_id end)
+    |> Enum.sort_by(&Map.get(&1, :stop_sequence))
   end
 end
